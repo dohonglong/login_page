@@ -9,8 +9,8 @@ const pool = new Pool({
   password: "honglong1998",
 });
 
-pool.on("connect", () => {
-  console.log("BRUHHHHH!!!");
-});
+// pool.on("connect", () => {
+//   console.log("Database connection established!");
+// });
 
 module.exports = pool;

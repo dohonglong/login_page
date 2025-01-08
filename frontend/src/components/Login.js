@@ -15,6 +15,7 @@ const Login = ({ setToken }) => {
       if (!response.ok) throw new Error("Login failed");
       const data = await response.json();
       setToken(data.token);
+      localStorage.setItem("token", data.token);
     } catch (error) {
       alert(error.message);
     }
@@ -36,7 +37,7 @@ const Login = ({ setToken }) => {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <button type="submit">Submit</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
