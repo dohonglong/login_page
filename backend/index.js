@@ -1,13 +1,12 @@
 const express = require("express");
 const pool = require("./db"); // Import the database connection
-
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
 const app = express();
 const PORT = 5000;
-
 app.use(cors());
 app.use(express.json());
 
@@ -50,53 +49,65 @@ app.post("/api/login", async (req, res) => {
 
 // Endpoint to fetch data from the greetings table
 app.get("/api/greetings", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1] || process.env.TOKEN;
+  // console.log("Token:", token);
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized." });
+    return res.status(401).json({ error: "Unauthorized: Missing token." });
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // const decoded = jwt.verify(token, JWT_SECRET);
     const result = await pool.query("SELECT * FROM greetings;");
     res.json(result.rows); // Send all rows
   } catch (error) {
+    console.error("Token validation error:", error.message);
     res.status(401).json({ error: "Invalid or expired token." });
   }
 });
 
-// // Endpoint to add result to the database
-// app.post("/api/greetings", async (req, res) => {
+// app.get("/api/greetings", async (req, res) => {
 //   try {
-//     const { message } = req.body;
-//     if (!message) {
-//       return req.status(400).send("Message is required");
-//     }
-//     const result = await pool.query(
-//       "INSERT INTO greetings (message) VALUES ($1) RETURNING *;",
-//       [message]
-//     );
-//     res.status(201).json(result.rows[0]);
+//     const result = await pool.query("SELECT * FROM greetings;");
+//     res.json(result.rows); // Send all rows
 //   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server error");
+//     console.error("Database query error:", error.message);
+//     res.status(500).json({ error: "Database query failed." });
 //   }
 // });
 
-// //Endpoint to delete
-// app.delete("/api/greetings/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params; // Extract the ID from the URL
-//     const result = await pool.query("DELETE FROM greetings WHERE id = $1;", [
-//       id,
-//     ]);
-//     if (result.rowCount === 0) {
-//       return res.status(404).send("Greeting not found");
-//     }
-//     res.status(204).send(); // Successfully deleted, no content to return
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server error");
-//   }
-// });
+// Endpoint to add result to the database
+app.post("/api/greetings", async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) {
+      return req.status(400).send("Message is required");
+    }
+    const result = await pool.query(
+      "INSERT INTO greetings (message) VALUES ($1) RETURNING *;",
+      [message]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
+
+//Endpoint to delete
+app.delete("/api/greetings/:id", async (req, res) => {
+  try {
+    const { id } = req.params; // Extract the ID from the URL
+    const result = await pool.query("DELETE FROM greetings WHERE id = $1;", [
+      id,
+    ]);
+    if (result.rowCount === 0) {
+      return res.status(404).send("Greeting not found");
+    }
+    res.status(204).send(); // Successfully deleted, no content to return
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

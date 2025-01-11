@@ -8,19 +8,25 @@ const Greetings = ({ token }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
     // Fetch
     const fetchGreetings = async () => {
       try {
         const response = await fetch("/api/greetings", {
+          method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(response);
         if (!response.ok) {
           throw new Error("Failed to fetch");
         }
         const data = await response.json();
         setGreetings(data);
       } catch (error) {
-        setError(error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -40,6 +46,7 @@ const Greetings = ({ token }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: result }),
       });
@@ -59,6 +66,9 @@ const Greetings = ({ token }) => {
     try {
       const response = await fetch(`/api/greetings/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error("Failed to delete greeting");
