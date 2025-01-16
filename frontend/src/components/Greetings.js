@@ -1,28 +1,30 @@
 import { useState, useEffect } from "react";
 import React from "react";
 
-const Greetings = ({ token }) => {
+const Greetings = ({ user, logout }) => {
   const [greetings, setGreetings] = useState([]);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
+    // if (!token) {
+    //   console.error("No token found");
+    //   return;
+    // }
     // Fetch
     const fetchGreetings = async () => {
       try {
         const response = await fetch("/api/greetings", {
           method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${user?.token}` },
         });
-        console.log(response);
+        // console.log(response);
+
         if (!response.ok) {
-          throw new Error("Failed to fetch");
+          throw new Error("Failed to fetch greetings");
         }
+
         const data = await response.json();
         setGreetings(data);
       } catch (error) {
@@ -32,11 +34,12 @@ const Greetings = ({ token }) => {
       }
     };
     fetchGreetings();
-  }, [token]);
+  }, [user]);
 
-  // Put greetings
+  // Add greetings
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+
     if (!result.trim()) {
       alert("Greeting cannot be empty!");
       return;
@@ -46,13 +49,15 @@ const Greetings = ({ token }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({ message: result }),
       });
+
       if (!response.ok) {
-        throw new Error("Failed to save input");
+        throw new Error("Failed to save input greetings");
       }
+
       const savedResult = await response.json();
       setGreetings((prevGreetings) => [...prevGreetings, savedResult]);
       setResult(" ");
@@ -67,12 +72,14 @@ const Greetings = ({ token }) => {
       const response = await fetch(`/api/greetings/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${user.token}`,
         },
       });
+
       if (!response.ok) {
         throw new Error("Failed to delete greeting");
       }
+
       // Update the state to remove
       setGreetings((prevGreetings) =>
         prevGreetings.filter((greeting) => greeting.id !== id)
@@ -92,6 +99,8 @@ const Greetings = ({ token }) => {
   return (
     <div>
       <h1>Greetings</h1>
+      <button onClick={logout}>Log Out</button>
+
       <form action="">
         <input
           type="text"
@@ -103,6 +112,7 @@ const Greetings = ({ token }) => {
           Send
         </button>
       </form>
+
       <ul>
         {greetings.map((greeting) => (
           <li key={greeting.id}>

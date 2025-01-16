@@ -4,6 +4,8 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const axios = require("axios"); // Add this line to import axios
+const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
 const PORT = 5000;
@@ -11,6 +13,40 @@ app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = "Long@1998";
+const GOOGLE_CLIENT_ID =
+  "118413101371-ao2hf0icafvtkrgiie3kmr7svmioj8o3.apps.googleusercontent.com";
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// Google Signin Endpoint
+app.post("/api/google-login", async (req, res) => {
+  const { token } = req.body; // Token from the frontend (Google token)
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    //console.log("Google Login Verified:", payload);
+
+    // You can now generate your own JWT and send it back to the frontend
+    const user = {
+      id: payload.sub,
+      name: payload.name,
+      email: payload.email,
+    };
+
+    // Generate a custom JWT token
+    const jwtToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ token: jwtToken, user }); // Send the custom JWT token and user info
+  } catch (error) {
+    console.error("Error verifying Google credential:", error.message);
+    res.status(401).json({ error: "Invalid Google credential" });
+  }
+});
 
 // User registration
 app.post("/api/register", async (req, res) => {
@@ -49,8 +85,9 @@ app.post("/api/login", async (req, res) => {
 
 // Endpoint to fetch data from the greetings table
 app.get("/api/greetings", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1] || process.env.TOKEN;
-  // console.log("Token:", token);
+  //console.log(req.headers.authorization);
+  const token = req.headers.authorization?.split(" ")[1];
+  //console.log("Token:", token);
   if (!token) {
     return res.status(401).json({ error: "Unauthorized: Missing token." });
   }
