@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-const Login = ({ setToken }) => {
+const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (event) => {
+  const handleManualLogin = async (event) => {
     event.preventDefault();
     try {
       const response = await fetch("/api/login", {
@@ -14,8 +14,9 @@ const Login = ({ setToken }) => {
       });
       if (!response.ok) throw new Error("Login failed");
       const data = await response.json();
-      setToken(data.token);
+
       localStorage.setItem("token", data.token);
+      setUser(data);
     } catch (error) {
       alert(error.message);
     }
@@ -23,7 +24,7 @@ const Login = ({ setToken }) => {
 
   return (
     <div>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleManualLogin}>
         <h1>LOGIN</h1>
         <input
           type="text"

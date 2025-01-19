@@ -9,12 +9,21 @@ const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
 const PORT = 5000;
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Allow your frontend origin
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Allow needed methods
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow necessary headers
+  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow cookies/auth tokens
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups"); // Allow popups to communicate
+  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none"); // Embed policy for leniency
+  next();
+});
 app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = "Long@1998";
-const GOOGLE_CLIENT_ID =
-  "118413101371-ao2hf0icafvtkrgiie3kmr7svmioj8o3.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // Google Signin Endpoint
@@ -28,19 +37,32 @@ app.post("/api/google-login", async (req, res) => {
       idToken: token,
       audience: GOOGLE_CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
-    //console.log("Google Login Verified:", payload);
+    console.log("PAYLOAD: ", payload);
+    const username = payload.name;
+    // Check if user already exists
+    let user = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
+    user = user.rows[0];
 
-    // You can now generate your own JWT and send it back to the frontend
-    const user = {
-      id: payload.sub,
-      name: payload.name,
-      email: payload.email,
-    };
-
+    if (!user) {
+      //const name = payload.name;
+      const first_name = payload.given_name;
+      const last_name = payload.family_name;
+      const googleId = payload.sub;
+      const email = payload.email;
+      const created_at = new Date();
+      // Insert into users table (for Google login users)
+      const result = await pool.query(
+        "INSERT INTO users (first_name, last_name, username, email, google_id, login_method, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+        [first_name, last_name, username, email, googleId, "google", created_at]
+      );
+      user = result.rows[0];
+    }
     // Generate a custom JWT token
-    const jwtToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1h" });
-
+    const jwtToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
     res.json({ token: jwtToken, user }); // Send the custom JWT token and user info
   } catch (error) {
     console.error("Error verifying Google credential:", error.message);
@@ -50,17 +72,31 @@ app.post("/api/google-login", async (req, res) => {
 
 // User registration
 app.post("/api/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email, first_name, last_name } = req.body;
+
+  if (!username || !password || !email || !first_name || !last_name) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10); // Hash password
   try {
+    // Ensure username is unique
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username]
+    );
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Username is already in use." });
+    }
+
     const result = await pool.query(
-      "INSERT INTO users (username, password) VALUES ($1,$2) RETURNING *",
-      [username, hashedPassword]
+      "INSERT INTO users (username, password, email, first_name, last_name, login_method) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [username, hashedPassword, email, first_name, last_name, "manual"]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "User already exists or other error." });
+    res.status(500).json({ error: "User registration failed." });
   }
 });
 
@@ -100,16 +136,6 @@ app.get("/api/greetings", async (req, res) => {
     res.status(401).json({ error: "Invalid or expired token." });
   }
 });
-
-// app.get("/api/greetings", async (req, res) => {
-//   try {
-//     const result = await pool.query("SELECT * FROM greetings;");
-//     res.json(result.rows); // Send all rows
-//   } catch (error) {
-//     console.error("Database query error:", error.message);
-//     res.status(500).json({ error: "Database query failed." });
-//   }
-// });
 
 // Endpoint to add result to the database
 app.post("/api/greetings", async (req, res) => {

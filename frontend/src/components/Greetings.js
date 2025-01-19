@@ -98,8 +98,8 @@ const Greetings = ({ user, logout }) => {
 
   return (
     <div>
-      <h1>Greetings</h1>
-      <button onClick={logout}>Log Out</button>
+      {/* <h1>Greetings</h1>
+      <button onClick={logout}>Log Out</button> */}
 
       <form action="">
         <input
