@@ -1,8 +1,12 @@
-import { React, useState } from "react";
+import { useState } from "react";
+import { Button, TextField, Box } from "@mui/material";
 
 const Register = () => {
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -10,7 +14,13 @@ const Register = () => {
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          first_name,
+          last_name,
+          username,
+          password,
+          email,
+        }),
       });
       if (!response.ok) throw new Error("Registration failed");
       alert("Registration successful! Congratulations");
@@ -21,22 +31,61 @@ const Register = () => {
 
   return (
     <div>
-      <form onSubmit={handleRegister}>
-        <h1>REGISTER</h1>
-        <input
-          type="text"
-          placeholder="Username"
+      <h1>REGISTER</h1>
+      <Box
+        component="form"
+        onSubmit={handleRegister}
+        className="login-register-box"
+      >
+        <TextField
+          label="First name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={first_name}
+          onChange={(event) => setFirstName(event.target.value)}
+        />
+        <TextField
+          label="Last name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={last_name}
+          onChange={(event) => setLastName(event.target.value)}
+        />
+        <TextField
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Password"
+        <TextField
+          label="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <button type="submit">Register</button>
-      </form>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          sx={{ marginTop: 2 }}
+        >
+          Register
+        </Button>
+      </Box>
     </div>
   );
 };

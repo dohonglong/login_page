@@ -11,10 +11,6 @@ const app = express();
 const PORT = 5000;
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Allow your frontend origin
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Allow needed methods
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow necessary headers
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow cookies/auth tokens
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups"); // Allow popups to communicate
   res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none"); // Embed policy for leniency
   next();
@@ -39,7 +35,7 @@ app.post("/api/google-login", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    console.log("PAYLOAD: ", payload);
+    //console.log("PAYLOAD: ", payload);
     const username = payload.name;
     // Check if user already exists
     let user = await pool.query("SELECT * FROM users WHERE username = $1", [
@@ -72,13 +68,14 @@ app.post("/api/google-login", async (req, res) => {
 
 // User registration
 app.post("/api/register", async (req, res) => {
-  const { username, password, email, first_name, last_name } = req.body;
+  const { first_name, last_name, username, password, email } = req.body;
 
-  if (!username || !password || !email || !first_name || !last_name) {
+  if (!first_name || !last_name || !username || !password || !email) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10); // Hash password
+  const created_at = new Date();
   try {
     // Ensure username is unique
     const existingUser = await pool.query(
@@ -90,8 +87,16 @@ app.post("/api/register", async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO users (username, password, email, first_name, last_name, login_method) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [username, hashedPassword, email, first_name, last_name, "manual"]
+      "INSERT INTO users (first_name, last_name, username, password, email, login_method, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [
+        first_name,
+        last_name,
+        username,
+        hashedPassword,
+        email,
+        "manual",
+        created_at,
+      ]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {

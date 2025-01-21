@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes, Navigate, Link } from "react-router-dom";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import axios from "axios";
@@ -51,22 +51,12 @@ const App = () => {
     localStorage.removeItem("token");
   };
 
-  // const responseMessage = (response) => {
-  //   console.log("Login Success: ", response);
-  //   //const userToken = response.credential; // Extract token
-  //   setToken(response);
-  //   localStorage.setItem("token", response);
-  // };
-  // const errorMessage = (error) => {
-  //   console.log("Error: ", error);
-  // };
-
   return (
     <div className="App">
       {/* Navbar and logout condition */}
       {user ? (
         <div>
-          <h1>WELCOME, {user.name}</h1>
+          <h1>WELCOME, {user.username}</h1>
           <button onClick={logout}>Logout</button>
         </div>
       ) : (

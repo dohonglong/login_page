@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button, TextField, Box } from "@mui/material";
 
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
@@ -24,22 +25,37 @@ const Login = ({ setUser }) => {
 
   return (
     <div>
-      <form onSubmit={handleManualLogin}>
-        <h1>LOGIN</h1>
-        <input
-          type="text"
-          placeholder="Username"
+      <h1>LOGIN</h1>
+      <Box
+        component="form"
+        onSubmit={handleManualLogin}
+        className="login-register-box"
+      >
+        <TextField
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Password"
+        <TextField
+          label="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <button type="submit">Login</button>
-      </form>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          sx={{ marginTop: 2 }}
+        >
+          Login
+        </Button>
+      </Box>
     </div>
   );
 };
