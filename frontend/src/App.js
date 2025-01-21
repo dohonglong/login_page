@@ -1,55 +1,20 @@
-import { useState, useEffect } from "react";
+//import { useEffect } from "react";
 import { Route, Routes, Navigate, Link } from "react-router-dom";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // To decode the token and extract user info
+import { GoogleLogin } from "@react-oauth/google";
+//import { jwtDecode } from "jwt-decode"; // To decode the token and extract user info
 import Greetings from "./components/Greetings";
-import Login from "./components/Login";
+import LoginManual from "./components/LoginManual";
 import Register from "./components/Register";
 import "./App.css";
+import useLoginGoogle from "./custom-hooks/useLoginGoogle";
+import useLogout from "./custom-hooks/useLogout";
+import useAuth from "./custom-hooks/useAuth";
 
 const App = () => {
-  // const [token, setToken] = useState(localStorage.getItem("token") || null);
-  const [user, setUser] = useState(null);
-  //const [profile, setProfile] = useState(null);
+  const { user, setUser, handleGoogleLogin } = useLoginGoogle();
+  const logout = useLogout(setUser);
 
-  // Restore user from token on app load
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedUser = jwtDecode(token); // Decode the token to get user info
-        setUser(decodedUser);
-      } catch (error) {
-        console.error("Invalid token:", error.message);
-        localStorage.removeItem("token"); // Clear invalid token
-      }
-    }
-  }, []);
-
-  const handleGoogleLogin = async (credentialResponse) => {
-    try {
-      const response = await axios.post("api/google-login", {
-        token: credentialResponse.credential,
-      });
-      console.log("Backend Login Success:", response.data);
-      setUser(response.data.user); // Set the user returned from the backend
-    } catch (error) {
-      console.error(
-        "Google Login Failed:",
-        error.response?.data || error.message
-      );
-    }
-  };
-
-  // Handle logout
-  const logout = () => {
-    googleLogout();
-    // setToken(null);
-    setUser(null);
-    //setProfile(null);
-    localStorage.removeItem("token");
-  };
+  useAuth(setUser);
 
   return (
     <div className="App">
@@ -87,7 +52,7 @@ const App = () => {
               <Navigate to="/greetings" />
             ) : (
               <div>
-                <Login setUser={setUser} />
+                <LoginManual setUser={setUser} />
               </div>
             )
           }

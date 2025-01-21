@@ -69,11 +69,9 @@ app.post("/api/google-login", async (req, res) => {
 // User registration
 app.post("/api/register", async (req, res) => {
   const { first_name, last_name, username, password, email } = req.body;
-
   if (!first_name || !last_name || !username || !password || !email) {
     return res.status(400).json({ error: "All fields are required." });
   }
-
   const hashedPassword = await bcrypt.hash(password, 10); // Hash password
   const created_at = new Date();
   try {
@@ -85,7 +83,6 @@ app.post("/api/register", async (req, res) => {
     if (existingUser.rows.length > 0) {
       return res.status(400).json({ error: "Username is already in use." });
     }
-
     const result = await pool.query(
       "INSERT INTO users (first_name, last_name, username, password, email, login_method, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       [
@@ -108,13 +105,29 @@ app.post("/api/register", async (req, res) => {
 // User login
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Username and password are required." });
+  }
   try {
     const result = await pool.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
     const user = result.rows[0];
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+      const token = jwt.sign(
+        {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          username: user.username,
+          email: user.email,
+          created_at: user.created_at,
+        },
+        JWT_SECRET,
+        { expiresIn: "1h" }
+      );
       res.json({ token });
     } else {
       res.status(401).json({ error: "Invalid username or password." });

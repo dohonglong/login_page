@@ -22,7 +22,21 @@ const Register = () => {
           email,
         }),
       });
-      if (!response.ok) throw new Error("Registration failed");
+      const data = await response.json();
+      if (!response.ok) {
+        if (data.error === "Username is already in use.") {
+          alert(
+            "The username is already in use. Please choose a different one."
+          );
+        } else if (data.error === "All fields are required.") {
+          alert("Please fill in all required fields.");
+        } else {
+          throw new Error(data.error || "Registration failed.");
+        }
+        window.location.reload();
+        return;
+      }
+      window.location.reload();
       alert("Registration successful! Congratulations");
     } catch (error) {
       alert(error.message);
