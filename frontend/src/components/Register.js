@@ -1,47 +1,9 @@
-import { useState } from "react";
 import { Button, TextField, Box } from "@mui/material";
+import useRegister from "../custom-hooks/useRegister";
 
 const Register = () => {
-  const [first_name, setFirstName] = useState("");
-  const [last_name, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-
-  const handleRegister = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_name,
-          last_name,
-          username,
-          password,
-          email,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        if (data.error === "Username is already in use.") {
-          alert(
-            "The username is already in use. Please choose a different one."
-          );
-        } else if (data.error === "All fields are required.") {
-          alert("Please fill in all required fields.");
-        } else {
-          throw new Error(data.error || "Registration failed.");
-        }
-        window.location.reload();
-        return;
-      }
-      window.location.reload();
-      alert("Registration successful! Congratulations");
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+  const { formRegistration, handleInputRegistrationChange, handleRegister } =
+    useRegister();
 
   return (
     <div>
@@ -53,43 +15,49 @@ const Register = () => {
       >
         <TextField
           label="First name"
+          name="first_name"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={first_name}
-          onChange={(event) => setFirstName(event.target.value)}
+          value={formRegistration.first_name}
+          onChange={handleInputRegistrationChange}
         />
         <TextField
           label="Last name"
+          name="last_name"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={last_name}
-          onChange={(event) => setLastName(event.target.value)}
+          value={formRegistration.last_name}
+          onChange={handleInputRegistrationChange}
         />
         <TextField
           label="Username"
+          name="username"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
+          value={formRegistration.username}
+          onChange={handleInputRegistrationChange}
         />
         <TextField
           label="Password"
+          name="password"
+          type="password"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={formRegistration.password}
+          onChange={handleInputRegistrationChange}
         />
         <TextField
           label="Email"
+          name="email"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          value={formRegistration.email}
+          onChange={handleInputRegistrationChange}
         />
         <Button
           variant="contained"

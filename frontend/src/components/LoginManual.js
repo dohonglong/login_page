@@ -2,7 +2,7 @@ import { Button, TextField, Box } from "@mui/material";
 import useLoginManual from "../custom-hooks/useLoginManual";
 
 const LoginManual = ({ setUser }) => {
-  const { username, setUsername, password, setPassword, handleManualLogin } =
+  const { formLogin, handleInputLoginChange, handleManualLogin } =
     useLoginManual(setUser);
 
   return (
@@ -15,19 +15,21 @@ const LoginManual = ({ setUser }) => {
       >
         <TextField
           label="Username"
+          name="username"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
+          value={formLogin.username}
+          onChange={handleInputLoginChange}
         />
         <TextField
           label="Password"
+          name="password"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={formLogin.password}
+          onChange={handleInputLoginChange}
         />
         <Button
           variant="contained"

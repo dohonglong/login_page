@@ -1,8 +1,18 @@
 import { useState } from "react";
 
 const useLoginManual = (setUser) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [formLogin, setFormLogin] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleInputLoginChange = async (event) => {
+    const { name, value } = event.target;
+    setFormLogin((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleManualLogin = async (event) => {
     event.preventDefault();
@@ -10,7 +20,7 @@ const useLoginManual = (setUser) => {
       const response = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(formLogin),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -32,10 +42,8 @@ const useLoginManual = (setUser) => {
   };
 
   return {
-    username,
-    setUsername,
-    password,
-    setPassword,
+    formLogin,
+    handleInputLoginChange,
     handleManualLogin,
   };
 };

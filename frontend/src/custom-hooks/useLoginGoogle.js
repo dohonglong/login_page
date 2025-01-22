@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
-const useLoginGoogle = () => {
-  const [user, setUser] = useState(null);
-
+const useLoginGoogle = (setUser) => {
   // Handle Google login
   const handleGoogleLogin = async (credentialResponse) => {
     try {
@@ -19,7 +18,21 @@ const useLoginGoogle = () => {
     }
   };
 
-  return { user, setUser, handleGoogleLogin };
+  // Restore user state from localStorage or token on app load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedUser = jwtDecode(token);
+        setUser(decodedUser);
+      } catch (error) {
+        console.error("Invalid token:", error.message);
+        localStorage.removeItem("token");
+      }
+    }
+  }, [setUser]);
+
+  return handleGoogleLogin;
 };
 
 export default useLoginGoogle;
