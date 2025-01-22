@@ -7,6 +7,7 @@ import LoginGoogle from "./components/LoginGoogle";
 import Register from "./components/Register";
 import useLoginGoogle from "./custom-hooks/useLoginGoogle";
 import useLogout from "./custom-hooks/useLogout";
+import { Button } from "@mui/material";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -19,7 +20,9 @@ const App = () => {
       {user ? (
         <div>
           <h1>WELCOME, {user.username}</h1>
-          <button onClick={logout}>Logout</button>
+          <Button variant="contained" onClick={logout}>
+            Logout
+          </Button>
         </div>
       ) : (
         <nav>

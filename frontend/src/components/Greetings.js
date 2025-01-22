@@ -1,93 +1,25 @@
-import { useState, useEffect } from "react";
-import React from "react";
+import {
+  Button,
+  TextField,
+  Grid2,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import useGreetings from "../custom-hooks/useGreetings";
 
-const Greetings = ({ user, logout }) => {
-  const [greetings, setGreetings] = useState([]);
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // if (!token) {
-    //   console.error("No token found");
-    //   return;
-    // }
-    // Fetch
-    const fetchGreetings = async () => {
-      try {
-        const response = await fetch("/api/greetings", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${user?.token}` },
-        });
-        // console.log(response);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch greetings");
-        }
-
-        const data = await response.json();
-        setGreetings(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchGreetings();
-  }, [user]);
-
-  // Add greetings
-  const handleOnSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!result.trim()) {
-      alert("Greeting cannot be empty!");
-      return;
-    }
-    try {
-      const response = await fetch("/api/greetings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({ message: result }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save input greetings");
-      }
-
-      const savedResult = await response.json();
-      setGreetings((prevGreetings) => [...prevGreetings, savedResult]);
-      setResult(" ");
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  // Remove greetings
-  const deleteGreeting = async (id) => {
-    try {
-      const response = await fetch(`/api/greetings/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete greeting");
-      }
-
-      // Update the state to remove
-      setGreetings((prevGreetings) =>
-        prevGreetings.filter((greeting) => greeting.id !== id)
-      );
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+const Greetings = ({ user }) => {
+  const {
+    greetings,
+    result,
+    loading,
+    error,
+    handleOnSubmit,
+    setResult,
+    deleteGreeting,
+  } = useGreetings(user);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -98,30 +30,44 @@ const Greetings = ({ user, logout }) => {
 
   return (
     <div>
-      {/* <h1>Greetings</h1>
-      <button onClick={logout}>Log Out</button> */}
-
-      <form action="">
-        <input
-          type="text"
-          placeholder="text here"
-          value={result}
-          onChange={(event) => setResult(event.target.value)}
-        />
-        <button type="submit" onClick={handleOnSubmit}>
-          Send
-        </button>
-      </form>
-
-      <ul>
-        {greetings.map((greeting) => (
-          <li key={greeting.id}>
-            {greeting.message}
-            {"   "}
-            <button onClick={() => deleteGreeting(greeting.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <Grid2
+        container
+        spacing={{ xs: 1, md: 2 }}
+        className="greeting-box"
+        style={{ marginTop: "40px" }}
+      >
+        <Grid2 size={{ xs: 9, md: 10 }} justifyContent="flex-start">
+          <TextField
+            label="Text here"
+            fullWidth
+            variant="outlined"
+            value={result}
+            onChange={(event) => setResult(event.target.value)}
+            style={{ height: "100%" }}
+          />
+        </Grid2>
+        <Grid2 size={{ xs: 3, md: 2 }} justifyContent="flex-end">
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            onClick={handleOnSubmit}
+            style={{ height: "100%" }}
+          >
+            Send
+          </Button>
+        </Grid2>
+        <List>
+          {greetings.map((greeting) => (
+            <ListItem key={greeting.id}>
+              <ListItemText primary={greeting.message} />
+              <IconButton edge="end" aria-label="delete">
+                <DeleteIcon onClick={() => deleteGreeting(greeting.id)} />
+              </IconButton>
+            </ListItem>
+          ))}
+        </List>
+      </Grid2>
     </div>
   );
 };

@@ -1,10 +1,9 @@
 const express = require("express");
-const pool = require("./db"); // Import the database connection
+const pool = require("./db");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const axios = require("axios"); // Add this line to import axios
 const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
@@ -18,7 +17,7 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-const JWT_SECRET = "Long@1998";
+const JWT_SECRET = process.env.JWT_SECRET;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
@@ -44,7 +43,6 @@ app.post("/api/google-login", async (req, res) => {
     user = user.rows[0];
 
     if (!user) {
-      //const name = payload.name;
       const first_name = payload.given_name;
       const last_name = payload.family_name;
       const googleId = payload.sub;
@@ -58,7 +56,9 @@ app.post("/api/google-login", async (req, res) => {
       user = result.rows[0];
     }
     // Generate a custom JWT token
-    const jwtToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+    const jwtToken = jwt.sign({ id: user.id }, JWT_SECRET, {
+      expiresIn: "60s",
+    });
     res.json({ token: jwtToken, user }); // Send the custom JWT token and user info
   } catch (error) {
     console.error("Error verifying Google credential:", error.message);
@@ -126,7 +126,7 @@ app.post("/api/login", async (req, res) => {
           created_at: user.created_at,
         },
         JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "60s" }
       );
       res.json({ token });
     } else {

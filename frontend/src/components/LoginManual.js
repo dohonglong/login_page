@@ -25,6 +25,7 @@ const LoginManual = ({ setUser }) => {
         <TextField
           label="Password"
           name="password"
+          type="password"
           variant="outlined"
           fullWidth
           margin="normal"
