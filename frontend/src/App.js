@@ -8,6 +8,7 @@ import Register from "./components/Register";
 import useLoginGoogle from "./custom-hooks/useLoginGoogle";
 import useLogout from "./custom-hooks/useLogout";
 import { Button } from "@mui/material";
+import HotelBooking from "./components/HotelBooking";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -19,6 +20,10 @@ const App = () => {
     <div className="App">
       {user ? (
         <div>
+          <nav>
+            <Link to="/greetings">Greetings</Link>
+            <Link to="/hotel_booking">Hotel Booking</Link>
+          </nav>
           <h1>WELCOME, {user.username}</h1>
           <Button variant="contained" onClick={logout}>
             Logout
@@ -64,6 +69,10 @@ const App = () => {
               <Navigate to="/login" />
             )
           }
+        />
+        <Route
+          path="/hotel_booking"
+          element={user ? <HotelBooking /> : <Navigate to="/login" />}
         />
       </Routes>
     </div>

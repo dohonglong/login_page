@@ -34,7 +34,7 @@ const Greetings = ({ user }) => {
         container
         spacing={{ xs: 1, md: 2 }}
         className="greeting-box"
-        style={{ marginTop: "40px" }}
+        sx={{ marginTop: "40px", overflowY: "auto" }}
       >
         <Grid2 size={{ xs: 9, md: 10 }} justifyContent="flex-start">
           <TextField
@@ -43,7 +43,7 @@ const Greetings = ({ user }) => {
             variant="outlined"
             value={result}
             onChange={(event) => setResult(event.target.value)}
-            style={{ height: "100%" }}
+            sx={{ height: "100%" }}
           />
         </Grid2>
         <Grid2 size={{ xs: 3, md: 2 }} justifyContent="flex-end">
@@ -52,21 +52,30 @@ const Greetings = ({ user }) => {
             fullWidth
             variant="contained"
             onClick={handleOnSubmit}
-            style={{ height: "100%" }}
+            sx={{ height: "100%" }}
           >
             Send
           </Button>
         </Grid2>
-        <List>
-          {greetings.map((greeting) => (
-            <ListItem key={greeting.id}>
-              <ListItemText primary={greeting.message} />
-              <IconButton edge="end" aria-label="delete">
-                <DeleteIcon onClick={() => deleteGreeting(greeting.id)} />
-              </IconButton>
-            </ListItem>
-          ))}
-        </List>
+        <Grid2 xs={12} sx={{ overflowY: "auto" }}>
+          <List>
+            {greetings.map((greeting) => (
+              <ListItem key={greeting.id} sx={{ alignItems: "flex-start" }}>
+                <ListItemText
+                  primary={greeting.message}
+                  sx={{
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",
+                  }}
+                />
+                <IconButton edge="end" aria-label="delete">
+                  <DeleteIcon onClick={() => deleteGreeting(greeting.id)} />
+                </IconButton>
+              </ListItem>
+            ))}
+          </List>
+        </Grid2>
       </Grid2>
     </div>
   );
