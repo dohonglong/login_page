@@ -41,14 +41,14 @@ const App = () => {
         <Route
           path="/"
           element={
-            user ? <Navigate to="/greetings" /> : <Navigate to="/login" />
+            user ? <Navigate to="/hotel_booking" /> : <Navigate to="/login" />
           }
         />
         <Route
           path="/login"
           element={
             user ? (
-              <Navigate to="/greetings" />
+              <Navigate to="/hotel_booking" />
             ) : (
               <div>
                 <LoginManual setUser={setUser} />
@@ -58,21 +58,21 @@ const App = () => {
         />
         <Route
           path="/register"
-          element={!user ? <Register /> : <Navigate to="/greetings" />}
+          element={!user ? <Register /> : <Navigate to="/hotel_booking" />}
         />
         <Route
-          path="/greetings"
+          path="/hotel_booking"
           element={
             user ? (
-              <Greetings user={user} logout={logout} />
+              <HotelBooking user={user} logout={logout} />
             ) : (
               <Navigate to="/login" />
             )
           }
         />
         <Route
-          path="/hotel_booking"
-          element={user ? <HotelBooking /> : <Navigate to="/login" />}
+          path="/greetings"
+          element={user ? <Greetings /> : <Navigate to="/login" />}
         />
       </Routes>
     </div>

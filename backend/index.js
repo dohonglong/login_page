@@ -190,6 +190,21 @@ app.delete("/api/greetings/:id", async (req, res) => {
   }
 });
 
+// Get room types
+app.get("/api/room-types", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Missing token." });
+  }
+  try {
+    const result = await pool.query("SELECT * FROM room_types;");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Token validation error:", error.message);
+    res.status(401).json({ error: "Invalid or expired token." });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
