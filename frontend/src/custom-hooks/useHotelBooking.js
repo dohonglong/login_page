@@ -22,7 +22,7 @@ const useHotelBooking = (user) => {
           throw new Error("Failed to fetch greetings");
         }
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         setRoomTypes(data);
       } catch (error) {
         setError(error.message);

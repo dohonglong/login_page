@@ -197,8 +197,9 @@ app.get("/api/room-types", async (req, res) => {
     return res.status(401).json({ error: "Unauthorized: Missing token." });
   }
   try {
-    const result = await pool.query("SELECT * FROM room_types;");
-    res.json(result.rows);
+    const response = await pool.query("SELECT * FROM room_types;");
+    const result = response.rows.sort((a, b) => a.id - b.id);
+    res.json(result);
   } catch (error) {
     console.error("Token validation error:", error.message);
     res.status(401).json({ error: "Invalid or expired token." });

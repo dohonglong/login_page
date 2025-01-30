@@ -82,7 +82,7 @@ const NavBar = ({ user, setUser }) => {
                 <Typography
                   variant="h6"
                   align="center"
-                  sx={{ ...menuStyle, gap: 3 }} // Override gap as 3 instead of 1 like in the large menu
+                  sx={{ ...menuStyle, gap: 3 }}
                 >
                   {menu.name}
                 </Typography>
@@ -90,19 +90,6 @@ const NavBar = ({ user, setUser }) => {
             </ListItem>
           </Link>
         ))}
-        {user && (
-          <ListItem disablePadding>
-            <ListItemButton onClick={logout}>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{ ...menuStyle, gap: 3 }}
-              >
-                Logout
-              </Typography>
-            </ListItemButton>
-          </ListItem>
-        )}
       </List>
     </Box>
   );
@@ -146,23 +133,34 @@ const NavBar = ({ user, setUser }) => {
           </Typography>
 
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {menus.map((menu) => (
-              <Link to={`${menu.link}`} key={menu.name}>
-                <Button sx={{ color: "#fff" }}>
-                  <Typography variant="h6" sx={menuStyle}>
-                    {menu.name}
+            {menus.map((menu, index) => (
+              <span key={menu.name}>
+                <Link to={`${menu.link}`}>
+                  <Button sx={{ color: "#fff" }}>
+                    <Typography variant="h6" sx={menuStyle}>
+                      {menu.name}
+                    </Typography>
+                  </Button>
+                </Link>
+                {(index < menus.length - 1 || user) && (
+                  <Typography
+                    variant="h6"
+                    component="span"
+                    sx={{ color: "white", mx: 1 }}
+                  >
+                    |
                   </Typography>
-                </Button>
-              </Link>
+                )}
+              </span>
             ))}
-            {user && (
-              <Button sx={{ color: "#fff" }} onClick={logout}>
-                <Typography variant="h6" sx={menuStyle}>
-                  Logout
-                </Typography>
-              </Button>
-            )}
           </Box>
+          {user && (
+            <Button sx={{ color: "#fff", marginLeft: "auto" }} onClick={logout}>
+              <Typography variant="h6" sx={menuStyle}>
+                Logout
+              </Typography>
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <nav>

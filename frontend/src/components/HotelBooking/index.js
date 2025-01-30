@@ -25,8 +25,8 @@ const HotelBooking = ({ user }) => {
   } = useHotelBooking(user);
 
   const cardStyle = {
-    width: "400px",
-    height: "250px",
+    width: "100%",
+    // height: "250px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -82,19 +82,24 @@ const HotelBooking = ({ user }) => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <Grid2 xs={12} container spacing={2} justifyContent="center">
+        <Grid2 container spacing={2} justifyContent="center">
           {roomTypes.map((roomtype) => (
-            <Grid2 key={roomtype.id} xs={3}>
+            <Grid2 key={roomtype.id} xs={12}>
               <Card value={roomtype.name} sx={cardStyle}>
                 <CardContent>
+                  <img
+                    src={roomtype.image_url}
+                    alt={roomtype.name}
+                    width={275}
+                  />
                   <Typography variant="h6">{roomtype.name}</Typography>
-                  <Typography
+                  {/* <Typography
                     variant="body1"
                     component="div"
                     textAlign="justify"
                   >
                     {roomtype.description}
-                  </Typography>
+                  </Typography> */}
                   <Typography variant="body1" component="div">
                     <b>{roomtype.price_per_night}</b> EUR/night
                   </Typography>
