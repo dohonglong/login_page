@@ -1,54 +1,29 @@
 import { useState } from "react";
-import { Route, Routes, Navigate, Link } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import Greetings from "./components/Greetings";
 import LoginManual from "./components/LoginManual";
-import LoginGoogle from "./components/LoginGoogle";
 import Register from "./components/Register";
-import useLoginGoogle from "./custom-hooks/useLoginGoogle";
-import useLogout from "./custom-hooks/useLogout";
-import { Button } from "@mui/material";
 import HotelBooking from "./components/HotelBooking";
+import NavBar from "./components/NavBar/NavBar";
 
 const App = () => {
   const [user, setUser] = useState(null);
 
-  const handleGoogleLogin = useLoginGoogle(setUser);
-  const logout = useLogout(setUser);
-
   return (
     <div className="App">
-      {user ? (
-        <div>
-          <nav>
-            <Link to="/greetings">Greetings</Link>
-            <Link to="/hotel_booking">Hotel Booking</Link>
-          </nav>
-          <h1>WELCOME, {user.username}</h1>
-          <Button variant="contained" onClick={logout}>
-            Logout
-          </Button>
-        </div>
-      ) : (
-        <nav>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-          <LoginGoogle handleGoogleLogin={handleGoogleLogin} />
-        </nav>
-      )}
+      <NavBar user={user} setUser={setUser} />
 
       <Routes>
         <Route
           path="/"
-          element={
-            user ? <Navigate to="/hotel_booking" /> : <Navigate to="/login" />
-          }
+          element={user ? <Navigate to="/hotels" /> : <Navigate to="/login" />}
         />
         <Route
           path="/login"
           element={
             user ? (
-              <Navigate to="/hotel_booking" />
+              <Navigate to="/hotels" />
             ) : (
               <div>
                 <LoginManual setUser={setUser} />
@@ -58,16 +33,12 @@ const App = () => {
         />
         <Route
           path="/register"
-          element={!user ? <Register /> : <Navigate to="/hotel_booking" />}
+          element={!user ? <Register /> : <Navigate to="/hotels" />}
         />
         <Route
-          path="/hotel_booking"
+          path="/hotels"
           element={
-            user ? (
-              <HotelBooking user={user} logout={logout} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            user ? <HotelBooking user={user} /> : <Navigate to="/login" />
           }
         />
         <Route

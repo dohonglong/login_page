@@ -38,7 +38,7 @@ const BookingModal = ({
     >
       <Box sx={modalStyle}>
         <Typography variant="h6" component="h2">
-          HOTEL BOOKING
+          HOTELS
         </Typography>
         <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           Please choose your booking details below.

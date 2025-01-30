@@ -1,9 +1,13 @@
 import { Button, TextField, Box } from "@mui/material";
+import LoginGoogle from "./LoginGoogle";
 import useLoginManual from "../custom-hooks/useLoginManual";
+import useLoginGoogle from "../custom-hooks/useLoginGoogle";
 
 const LoginManual = ({ setUser }) => {
   const { formLogin, handleInputLoginChange, handleManualLogin } =
     useLoginManual(setUser);
+
+  const handleGoogleLogin = useLoginGoogle(setUser);
 
   return (
     <div>
@@ -40,6 +44,7 @@ const LoginManual = ({ setUser }) => {
         >
           Login
         </Button>
+        <LoginGoogle handleGoogleLogin={handleGoogleLogin} />
       </Box>
     </div>
   );

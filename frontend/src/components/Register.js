@@ -1,10 +1,13 @@
 import { Button, TextField, Box } from "@mui/material";
+import LoginGoogle from "./LoginGoogle";
 import useRegister from "../custom-hooks/useRegister";
+import useLoginGoogle from "../custom-hooks/useLoginGoogle";
 
-const Register = () => {
+const Register = ({ setUser }) => {
   const { formRegistration, handleInputRegistrationChange, handleRegister } =
     useRegister();
 
+  const handleGoogleLogin = useLoginGoogle(setUser);
   return (
     <div>
       <h1>REGISTER</h1>
@@ -67,6 +70,7 @@ const Register = () => {
         >
           Register
         </Button>
+        <LoginGoogle handleGoogleLogin={handleGoogleLogin} />
       </Box>
     </div>
   );
