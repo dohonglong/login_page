@@ -58,7 +58,7 @@ const NavBar = ({ user, setUser }) => {
       onClick={handleDrawerToggle}
       sx={{
         textAlign: "center",
-        backgroundColor: "#1560bd",
+        backgroundColor: "#1F445A",
         color: "white",
         height: "100vh",
       }}
@@ -96,11 +96,10 @@ const NavBar = ({ user, setUser }) => {
 
   return (
     <Box style={{ display: "flex" }}>
-      {/* Only sx can work with display instead of style */}
       <AppBar
         component="nav"
         position="fixed"
-        sx={{ backgroundColor: "#0039a6" }}
+        sx={{ backgroundColor: "#1F445A" }}
       >
         <Toolbar>
           {/* The burger button */}
