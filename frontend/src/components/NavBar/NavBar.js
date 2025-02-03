@@ -98,7 +98,7 @@ const NavBar = ({ user, setUser }) => {
     <Box style={{ display: "flex" }}>
       <AppBar
         component="nav"
-        position="fixed"
+        position="relative"
         sx={{ backgroundColor: "#1F445A" }}
       >
         <Toolbar>

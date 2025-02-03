@@ -2,15 +2,16 @@ import {
   Button,
   Grid2,
   Box,
-  Typography,
+  //Typography,
   //Card,
-  CardMedia,
+  //CardMedia,
   //CardContent,
-  Container,
+  //Container,
   //Chip,
 } from "@mui/material";
 import useHotelBooking from "../../custom-hooks/useHotelBooking";
 import BookingModal from "./BookingModal";
+import RoomDetails from "./RoomDetails";
 
 const HotelBooking = ({ user }) => {
   const {
@@ -65,79 +66,22 @@ const HotelBooking = ({ user }) => {
         />
       </Grid2>
 
-      <Container maxWidth="false" sx={{ mt: 4, width: "90%" }}>
-        <Grid2
-          container
-          spacing={1}
-          sx={{ justifyContent: "center", alignItems: "stretch" }}
-        >
-          {roomTypes.map((room, id) => (
-            <Grid2
-              key={id}
-              sx={{
-                width: "100%",
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-                boxShadow: 3,
-                p: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  position: "relative",
-                  overflow: "hidden",
-                  "&:hover img": { opacity: 0.5, transform: "scale(1.1)" },
-                  "&:hover button": {
-                    backgroundColor: "transparent",
-                    color: "black",
-                    border: "2px solid black",
-                  },
-                  transition: "opacity 0.3s ease-in-out",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={room.image_url}
-                  alt={room.name}
-                  sx={{
-                    height: { xs: "auto", sm: 300 },
-                    width: "100%",
-                    transition: "transform 0.3s ease-in-out",
-                    margin: "auto",
-                    display: "block",
-                    objectFit: "cover",
-                  }}
-                />
-              </Box>
+      <RoomDetails roomTypes={roomTypes} />
 
-              {/* Room Details */}
-              <Box sx={{ flex: 1, p: 2 }}>
-                <Typography variant="h4" gutterBottom>
-                  {room.name}
-                </Typography>
-                <Typography variant="h6" color="text.secondary">
-                  {room.price_per_night} EUR/night
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  {room.description}
-                </Typography>
-
-                {/* <Grid2 container spacing={1} sx={{ mt: 2 }}>
-                    {room.amenities.map((amenity, index) => (
-                      <Grid2 key={index}>
-                        <Chip
-                          label={amenity}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid2>
-                    ))}
-                  </Grid2> */}
-              </Box>
-            </Grid2>
-          ))}
-        </Grid2>
-      </Container>
+      <Box
+        component="footer"
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          backgroundColor: "#1F445A",
+          color: "white",
+          textAlign: "center",
+          padding: 2,
+        }}
+      >
+        © 2024 My Website | All Rights Reserved
+      </Box>
     </div>
   );
 };
