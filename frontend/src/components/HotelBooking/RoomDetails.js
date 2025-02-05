@@ -85,7 +85,7 @@ const RoomDetails = ({ roomTypes }) => {
                 spacing={1}
                 sx={{
                   display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
+                  flexDirection: "row",
                   justifyContent: { xs: "center", md: "flex-end" },
                   alignSelf: { xs: "center", md: "flex-end" },
                   marginTop: "auto",
