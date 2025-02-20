@@ -2,7 +2,7 @@ import {
   Button,
   Grid2,
   Box,
-  TextField,
+  //TextField,
   FormControl,
   //InputLabel,
   Select,
@@ -41,6 +41,25 @@ const HotelBooking = ({ user }) => {
   } = useHotelBooking(user);
   //const [selectedDate, setSelectedDate] = useState(null);
   const [rooms, setRooms] = useState(1);
+  const [guests, setGuests] = useState({ 1: 1 });
+
+  const handleRoomChange = (event) => {
+    const numberRooms = parseInt(event.target.value, 10) || 1;
+    setRooms(numberRooms);
+    setGuests((prevGuests) => {
+      const newGuests = { ...prevGuests };
+      for (let i = 1; i <= numberRooms; i++) {
+        if (!(i in newGuests)) newGuests[i] = 1;
+      }
+      return newGuests;
+    });
+  };
+  const handleGuestChange = (room, event) => {
+    const numberGuests = parseInt(event.target.value, 10) || 1;
+    setGuests((prevGuests) => ({ ...prevGuests, [room]: numberGuests }));
+  };
+
+  const totalGuests = Object.values(guests).reduce((sum, num) => sum + num, 0);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -149,67 +168,63 @@ const HotelBooking = ({ user }) => {
               }}
             />
           </LocalizationProvider>
-          <TextField
-            label="Number of Guests"
-            type="number"
-            variant="filled"
-            sx={{
-              backgroundColor: "white",
-              "& .MuiInputBase-root": {
-                backgroundColor: "white",
-              },
-              "& .MuiFilledInput-root": {
-                backgroundColor: "white",
-                "&:hover": { backgroundColor: "#f0f0f0" },
-                "&.Mui-focused": { backgroundColor: "white" },
-              },
-              input: { color: "black" },
-              label: { color: "black" },
-            }}
-          />
-          <Box display="flex" flexDirection="column" gap={2}>
-            <Select
-              label="Number of Rooms"
-              variant="filled"
-              value={rooms}
-              onChange={(e) =>
-                setRooms(Math.max(1, parseInt(e.target.value) || 1))
-              }
-              sx={{ backgroundColor: "white" }}
+
+          {/* Rooms and Guests */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {/* Rooms selector */}
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 200, backgroundColor: "white" }}
             >
-              {[1, 2, 3, 4].map((num) => (
-                <MenuItem key={num} value={num}>
-                  {num}
-                </MenuItem>
+              <Select
+                displayEmpty
+                value={rooms}
+                onChange={handleRoomChange}
+                sx={{ backgroundColor: "white", textAlign: "left" }}
+              >
+                <MenuItem disabled>Choose Number of Guests</MenuItem>
+                {[1, 2, 3, 4].map((num) => (
+                  <MenuItem key={num} value={num}>
+                    {num} Room{num > 1 ? "s" : ""}
+                  </MenuItem>
+                ))}
+              </Select>
+              {Array.from({ length: rooms }, (_, i) => (
+                <Box
+                  key={`room-${i + 1}`}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    marginTop: 1,
+                  }}
+                >
+                  <Typography sx={{ color: "black" }}>Room {i + 1}</Typography>
+                  <FormControl variant="outlined" sx={{ minWidth: 100 }}>
+                    <Select
+                      value={guests[i + 1]}
+                      onChange={(event) => handleGuestChange(i + 1, event)}
+                      sx={{ backgroundColor: "white", textAlign: "left" }}
+                    >
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <MenuItem key={num} value={num}>
+                          {num} Guest{num > 1 ? "s" : ""}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
               ))}
-            </Select>
-            <TextField
-              select
-              label="Number of Rooms"
-              variant="filled"
-              value={rooms}
-              onChange={(e) =>
-                setRooms(Math.max(1, parseInt(e.target.value) || 1))
-              }
-              sx={{ backgroundColor: "white" }}
-            >
-              {[1, 2, 3, 4].map((num) => (
-                <MenuItem key={num} value={num}>
-                  {num}
-                </MenuItem>
-              ))}
-            </TextField>
-            {Array.from({ length: rooms }, (_, i) => (
-              <TextField
-                key={i + 1}
-                label={`Guests in Room ${i + 1}`}
-                type="number"
-                variant="filled"
-                sx={{ backgroundColor: "white" }}
-              />
-            ))}
+              <Typography
+                sx={{ marginTop: 2, fontWeight: "bold", color: "black" }}
+              >
+                {rooms} Room{rooms > 1 ? "s" : ""}, {totalGuests} Guest
+                {totalGuests > 1 ? "s" : ""}
+              </Typography>
+            </FormControl>
           </Box>
-          <Typography>Room Types</Typography>
+
+          {/* <Typography>Room Types</Typography>
           <FormControl
             variant="outlined"
             sx={{ minWidth: 200, backgroundColor: "white" }}
@@ -242,7 +257,7 @@ const HotelBooking = ({ user }) => {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
         </Grid2>
       </Box>
     </div>
