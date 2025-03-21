@@ -42,6 +42,7 @@ const HotelBooking = ({ user }) => {
   //const [selectedDate, setSelectedDate] = useState(null);
   const [rooms, setRooms] = useState(1);
   const [guests, setGuests] = useState({ 1: 1 });
+  const [open1, setOpen1] = useState(false);
 
   const handleRoomChange = (event) => {
     const numberRooms = parseInt(event.target.value, 10) || 1;
@@ -58,7 +59,6 @@ const HotelBooking = ({ user }) => {
     const numberGuests = parseInt(event.target.value, 10) || 1;
     setGuests((prevGuests) => ({ ...prevGuests, [room]: numberGuests }));
   };
-
   const totalGuests = Object.values(guests).reduce((sum, num) => sum + num, 0);
 
   if (loading) {
@@ -178,49 +178,64 @@ const HotelBooking = ({ user }) => {
             >
               <Select
                 displayEmpty
-                value={rooms}
-                onChange={handleRoomChange}
+                value={`${rooms} Room${
+                  rooms > 1 ? "s" : ""
+                }, ${totalGuests} Guest${totalGuests > 1 ? "s" : ""}`}
+                onOpen={() => setOpen1(true)}
+                onClose={() => setOpen1(false)}
+                open={open1}
+                //onChange={handleRoomChange}
+                renderValue={() =>
+                  `${rooms} Room${rooms > 1 ? "s" : ""}, ${totalGuests} Guest${
+                    totalGuests > 1 ? "s" : ""
+                  }`
+                }
                 sx={{ backgroundColor: "white", textAlign: "left" }}
               >
-                <MenuItem disabled>Choose Number of Guests</MenuItem>
-                {[1, 2, 3, 4].map((num) => (
-                  <MenuItem key={num} value={num}>
-                    {num} Room{num > 1 ? "s" : ""}
-                  </MenuItem>
-                ))}
-              </Select>
-              {Array.from({ length: rooms }, (_, i) => (
-                <Box
-                  key={`room-${i + 1}`}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    marginTop: 1,
-                  }}
-                >
-                  <Typography sx={{ color: "black" }}>Room {i + 1}</Typography>
+                <MenuItem disabled>Choose Number of Rooms</MenuItem>
+                <MenuItem>
                   <FormControl variant="outlined" sx={{ minWidth: 100 }}>
                     <Select
-                      value={guests[i + 1]}
-                      onChange={(event) => handleGuestChange(i + 1, event)}
+                      value={rooms}
+                      onChange={handleRoomChange}
                       sx={{ backgroundColor: "white", textAlign: "left" }}
                     >
-                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                      {[1, 2, 3, 4].map((num) => (
                         <MenuItem key={num} value={num}>
-                          {num} Guest{num > 1 ? "s" : ""}
+                          {num} Room{num > 1 ? "s" : ""}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                </Box>
-              ))}
-              <Typography
-                sx={{ marginTop: 2, fontWeight: "bold", color: "black" }}
-              >
-                {rooms} Room{rooms > 1 ? "s" : ""}, {totalGuests} Guest
-                {totalGuests > 1 ? "s" : ""}
-              </Typography>
+                </MenuItem>
+                <MenuItem disabled>Choose Number of Guests</MenuItem>
+                {Array.from({ length: rooms }, (_, i) => (
+                  <MenuItem key={`room-${i + 1}`}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <Typography>Room {i + 1}</Typography>
+                      <FormControl variant="outlined" sx={{ minWidth: 100 }}>
+                        <Select
+                          value={guests[i + 1] || 1}
+                          onChange={(event) => handleGuestChange(i + 1, event)}
+                          sx={{ backgroundColor: "white", textAlign: "left" }}
+                        >
+                          {[1, 2, 3, 4, 5, 6].map((num) => (
+                            <MenuItem key={num} value={num}>
+                              {num} Guest{num > 1 ? "s" : ""}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
           </Box>
 
